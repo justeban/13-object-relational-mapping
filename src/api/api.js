@@ -25,6 +25,12 @@ router.get('/api/v1/:model/:id', (req, res, next) => {
     .catch(next);
 });
 
+router.put('/api/v1/:model/:id', (req, res, next) => {
+  req.model.findByIdAndUpdate(req.params.id, req.body)
+    .then(data => sendJSON(res, data))
+    .catch(next);
+});
+
 router.delete('/api/v1/:model/:id', (req, res, next) => {
   req.model.findByIdAndDelete(req.params.id)
     .then(data => sendJSON(res, data))
