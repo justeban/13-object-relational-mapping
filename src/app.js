@@ -7,6 +7,9 @@ import cors from 'cors';
 
 import router from './api/api.js';
 
+import errorHandler from './middleware/error.js';
+import notFound from './middleware/404.js';
+
 mongoose.connect(process.env.MONGODB_URI);
 
 let app = express();
@@ -16,6 +19,9 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 app.use(router);
+
+app.use(notFound);
+app.use(errorHandler);
 
 let isRunning = false; 
 
