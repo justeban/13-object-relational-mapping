@@ -1,79 +1,126 @@
 ![CF](https://camo.githubusercontent.com/70edab54bba80edb7493cad3135e9606781cbb6b/687474703a2f2f692e696d6775722e636f6d2f377635415363382e706e67) 13: Single Resource Mongo and Express API
 ===
 
-## Submission Instructions
-* Work in a fork of this repository
-* Work in a branch on your fork
-* Create a PR to your master from your working branch.
-* Ensure that your repository/branch is connected to travis-ci.com
-* Ensure that your repository/branch is connected to a dyno at heroku.com
-* Heroku and Travis should pick you up and deploy
-* Submit on canvas:
-  * a question and observation
-  * how long you spent
-  * link to your pull request
-  * link to your build at travis-ci URL
-  * Heroku Server URL
+[![Build Status](https://travis-ci.com/justeban/13-object-relational-mapping.svg?branch=lab-justin)](https://travis-ci.com/justeban/13-object-relational-mapping)
 
-## Configuration 
-Configure the root of your repository with the following files and directories. Thoughfully name and organize any aditional configuration or module files.
-* **README.md** - contains documentation
-* **.env** - contains env variables (should be git ignored)
-* **.gitignore** - contains a [robust](http://gitignore.io) `.gitignore` file 
-* **.eslintrc** - contains the course linter configuratoin
-* **.eslintignore** - contains the course linter ignore configuration
-* **.travis.yml** - contains the course linter ignore configuration
-* **package.json** - contains npm package config
-  * create a `lint` script for running eslint (eslint **/*.js)
-  * create a `test` script for running tests
-  * create a `start` script for running your server
-* **index.js** - the entry point for your application
-* **src/** - contains your core application files and folders
-* **src/app.js** - (or main.js) contains your core application bootstrap
-* **src/lib/** - contains module definitions
-* **\_\_test\_\_/** - contains unit tests
+* **Git Hub Repo:** [https://github.com/justeban/13-object-relational-mapping/tree/lab-justin](https://github.com/justeban/13-object-relational-mapping/tree/lab-justin)
+* **Heroku App:** [https://mongo-server-lab-13.herokuapp.com/](https://mongo-server-lab-13.herokuapp.com/)
+* **Travis Build:** [https://travis-ci.com/justeban/13-object-relational-mapping](https://travis-ci.com/justeban/13-object-relational-mapping)
 
-## Learning Objectives  
-* students will be able to work with the MongoDB database management system
-* students will understand the primary concepts of working with a NoSQL database management system
-* students will be able to create custom data models *(schemas)* through the use of mongoose.js
-* students will be able to use mongoose.js helper methods for interacting with their database persistence layer
+# Overview
+This is an app created to begin our dive into MongoDB and NoSQL databases. The api is created with RESTful endpoints that make queries to our MongoDB on Heroku.
 
-## Requirements
+# Configuration  
 
-#### Feature Tasks
-* create an HTTP Server using `express`
-* create a resource **model** of your choice that uses `mongoose.Schema` and `mongoose.model`
-* use the `body-parser` express middleware to parse the `req` body on `POST` and `PUT` requests
-* use the npm `debug` module to log the functions and methods that are being used in your application
-* use the express `Router` to create a route for doing **RESTFUL CRUD** operations against your _model_
+Make sure that your MONGODB_URI config var is set in Heroku. 
+
+Necessary dependencies are downloaded. (*located in package.json*)
+
+## Data Models
+
+This API supports two data models so far: 
+
+1. Guitars - ```{brand, model, price, strings}```
+    ```
+    brand: { type:String, uppercase:true, required:true },
+    model: { type:String, uppercase:true, required:true},
+    price: { type:Number, required:true},
+    strings: {type:Number, default:6, enum:[4, 6, 12]}
+    ``` 
+2. Keyboards - ```{brand, model, price, keys}```
+    ```
+    brand: { type: String, uppercase: true, required: true },
+    model: { type: String, uppercase: true, required: true },
+    price: { type: Number, required: true },
+    keys: { type: Number, required:true }
+    ```
 
 ## Server Endpoints
-### `/api/resource-name`
-* `POST` request
-  * should pass data as stringifed JSON in the body of a post request to create a new resource
 
-### `/api/resource-name/:id`
-* `GET` request
-  * should pass the id of a resource through the url endpoint to get a resource
-    * **this should use `req.params`, not querystring parameters**
-* `PUT` request
-  * should pass data as stringifed JSON in the body of a put request to update a pre-existing resource
-* `DELETE` request
-  * should pass the id of a resource though the url endpoint to delete a resource
-    * **this should use `req.params`**
+**GET** `/api/v1/:model`
 
-### Tests
-* create a test that will ensure that your API returns a status code of 404 for routes that have not been registered
-* create a series of tests to ensure that your `/api/resource-name` endpoint responds as described for each condition below:
-  * `GET` - test 200, returns a resource with a valid body
- * `GET` - test 404, respond with 'not found' for valid requests made with an id that was not found
- * `PUT` - test 200, returns a resource with an updated body
- * `PUT` - test 400, responds with 'bad request' if no request body was provided
- * `PUT` - test 404, responds with 'not found' for valid requests made with an id that was not found
- * `POST` - test 400, responds with 'bad request' if no request body was provided
- * `POST` - test 200, returns a resource for requests made with a valid body
+*  When used with either model, returns a JSON object that returns all guitars or keyboards. For Example: 
+```
+GET https://mongo-server-lab-13.herokuapp.com/api/v1/guitars
 
-### Bonus
-* **2pts:** a `GET` request to `/api/resource-name` should return an array of stored resources
+// returns
+
+[
+    {
+        "strings": 6,
+        "_id": "5b0f3ab7be1079fa146345e4",
+        "brand": "GIBSON",
+        "model": "LES PAUL",
+        "price": 800,
+        "__v": 0
+    }, 
+    
+    ...
+]
+```
+
+**POST** `/api/v1/:model`
+
+* When used with either model, will post request to database and return what was posted. Request Body must match the model provided. 
+
+```
+POST https://mongo-server-lab-13.herokuapp.com/api/v1/guitars
+
+req = {
+  "brand": "Fender", 
+  "model": "jazzmaster", 
+  "price": 1999, 
+  "strings": 6
+}
+```
+
+**GET** `/api/v1/:model/:id`
+
+* When used, will return data model entry that matches the id. 
+
+```
+GET https://mongo-server-lab-13.herokuapp.com/api/v1/keyboards/5b0fa39fe917c4015486d030
+
+{
+    "_id": "5b0fa39fe917c4015486d030",
+    "brand": "NOVATION",
+    "model": "LAUNCHKEY MINI MKII",
+    "price": 79,
+    "keys": 25,
+    "__v": 0
+}
+```
+
+**PUT** `/api/v1/:model/:id`
+
+* When used, it will update the entry with the corresponding ID. Depending on the information given, the api will update the whole record or just one detail of a record.
+```
+PUT https://mongo-server-lab-13.herokuapp.com/api/v1/keyboards/5b0fa39fe917c4015486d030
+
+req = {
+    "brand": "NOVATION PlUS+"
+}
+
+or 
+
+req = {
+  "brand": "NOVATION PLUS+",
+  "model": "LAUNCHKEY MK3",
+  "price": 450,
+  "keys": 88
+}
+
+both valid
+```
+
+**DELETE** `/api/v1/:model/:id`
+
+* When used will delete entry corresponding with the id. 
+
+```
+DELETE https://mongo-server-lab-13.herokuapp.com/api/v1/guitar/5b0f3ab7be1079fa146345e4
+
+// Guitar with id=5b0f3ab7be1079fa146345e4 deleted
+```
+
 
