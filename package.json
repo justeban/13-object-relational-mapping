@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "eslint **/*.js",
     "start": "node index.js",
-    "test": "jest --coverage --verbose",
-    "test-watch": "jest --watchAll --verbose --coverage",
+    "test": "jest --coverage --verbose --detectOpenHandles",
+    "test-watch": "jest --watchAll --verbose --coverage --detectOpenHandles",
     "watch": "nodemon index.js"
   },
   "repository": {
